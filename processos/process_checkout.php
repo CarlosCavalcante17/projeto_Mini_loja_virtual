@@ -1,25 +1,24 @@
 <?php
 session_start();
-require '../config/conexao.php';
+include '../config/conexao.php';
 
-// Verifica login e carrinho vazio
 if (!isset($_SESSION['id_usuario']) || empty($_SESSION['carrinho'])) {
     header('Location: ../index.php');
     exit;
 }
 
+
+$conexao->begin_transaction();
+
 try {
-    $pdo->beginTransaction();
-
-    // 1. Calcular total (precisamos buscar os preços atuais)
+    
     $ids = implode(',', array_keys($_SESSION['carrinho']));
-    $stmt = $pdo->query("SELECT id, preco FROM produtos WHERE id IN ($ids)");
-    $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    $result = $conexao->query("SELECT id, preco FROM produtos WHERE id IN ($ids)");
+    
     $total = 0;
     $itens_para_inserir = [];
 
-    foreach ($produtos as $prod) {
+    while ($prod = $result->fetch_assoc()) {
         $qtd = $_SESSION['carrinho'][$prod['id']];
         $total += $prod['preco'] * $qtd;
         $itens_para_inserir[] = [
@@ -29,27 +28,30 @@ try {
         ];
     }
 
-    // 2. Criar Pedido
-    $stmt = $pdo->prepare("INSERT INTO pedidos (id_usuario, valor_total, status) VALUES (?, ?, 'processando')");
-    $stmt->execute([$_SESSION['id_usuario'], $total]);
-    $id_pedido = $pdo->lastInsertId();
+    
+    $stmt = $conexao->prepare("INSERT INTO pedidos (id_usuario, valor_total, status) VALUES (?, ?, 'processando')");
+    $stmt->bind_param("id", $_SESSION['id_usuario'], $total);
+    $stmt->execute();
+    $id_pedido = $conexao->insert_id;
+    $stmt->close();
 
-    // 3. Inserir Itens
-    $stmtItem = $pdo->prepare("INSERT INTO itens_pedido (id_pedido, id_produto, quantidade, preco_unitario) VALUES (?, ?, ?, ?)");
+    
+    $stmtItem = $conexao->prepare("INSERT INTO itens_pedido (id_pedido, id_produto, quantidade, preco_unitario) VALUES (?, ?, ?, ?)");
+    
     foreach ($itens_para_inserir as $item) {
-        $stmtItem->execute([$id_pedido, $item['id_produto'], $item['qtd'], $item['preco']]);
+        
+        $stmtItem->bind_param("iiid", $id_pedido, $item['id_produto'], $item['qtd'], $item['preco']);
+        $stmtItem->execute();
     }
+    $stmtItem->close();
 
-    $pdo->commit();
+    $conexao->commit();
     
-    // Limpa o carrinho
     unset($_SESSION['carrinho']);
-    
-    // Redireciona para sucesso (pode criar uma pagina de obrigado)
-    header('Location: ../index.php?sucesso=pedido_realizado');
+    header('Location: ../meus_pedidos.php');
 
 } catch (Exception $e) {
-    $pdo->rollBack();
-    die("Erro ao processar pedido: " . $e->getMessage());
+    $conexao->rollback(); 
+    die("Erro ao processar: " . $e->getMessage());
 }
 ?>
