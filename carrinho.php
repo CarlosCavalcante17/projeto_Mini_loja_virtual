@@ -1,6 +1,6 @@
 <?php
-require 'config/conexao.php';
-require 'templates/header.php';
+include 'config/conexao.php';
+include 'templates/header.php';
 
 $carrinho = $_SESSION['carrinho'] ?? [];
 ?>
@@ -57,4 +57,4 @@ $carrinho = $_SESSION['carrinho'] ?? [];
     </div>
 <?php endif; ?>
 
-<?php require 'templates/footer.php'; ?>
+<?php include 'templates/footer.php'; ?>
