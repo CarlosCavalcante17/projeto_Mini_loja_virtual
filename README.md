@@ -20,9 +20,11 @@ Backend: PHP (Linguagem principal)
 
 Banco de Dados: MySQL (Gerenciado via phpMyAdmin no XAMPP)
 
-desenvolvedores: Carlos Eduardo e Nelson Francisco
-
-
 Frontend: HTML5, CSS3, JavaScript
 
 Ambiente Local: XAMPP
+
+
+
+desenvolvedores: Carlos Eduardo e Nelson Francisco
+
