@@ -1,4 +1,4 @@
-<?php include 'templates/header.php'; ?>
+<?php include 'template/header.php'; ?>
 
 <div class="row justify-content-center">
     <div class="col-md-6">
@@ -12,7 +12,7 @@
                     <div class="alert alert-warning">Este email já está cadastrado. Tente fazer login.</div>
                 <?php endif; ?>
 
-                <form action="process/registro_process.php" method="POST">
+                <form action="processos/process_registro.php" method="POST">
                     <div class="mb-3">
                         <label for="nome" class="form-label">Nome Completo</label>
                         <input type="text" name="nome" id="nome" class="form-control" required>
@@ -41,4 +41,4 @@
     </div>
 </div>
 
-<?php include 'templates/footer.php'; ?>
+<?php include 'template/footer.php'; ?>

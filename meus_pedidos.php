@@ -1,12 +1,12 @@
 <?php
 include 'config/auth_check.php';
 include 'config/conexao.php';
-include 'templates/header.php';
+include 'template/header.php';
 
-$Id_usuario = $_SESSION['Id_usuario'];
+$id_usuario = $_SESSION['id_usuario'];
 
 
-$stmt = $conexao->prepare("SELECT * FROM pedidos WHERE Id_usuario = ? ORDER BY data_pedido DESC");
+$stmt = $conexao->prepare("SELECT * FROM pedidos WHERE id_usuario = ? ORDER BY data_pedido DESC");
 $stmt->bind_param("i", $id_usuario);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -40,5 +40,5 @@ $pedidos = $result->fetch_all(MYSQLI_ASSOC);
 
 <?php 
 $stmt->close();
-include 'templates/footer.php'; 
+include 'template/footer.php'; 
 ?>
