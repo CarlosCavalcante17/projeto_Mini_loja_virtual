@@ -1,7 +1,7 @@
 <?php
 include 'config/auth_check.php';
 include 'config/conexao.php';
-include 'templates/header.php';
+include 'template/header.php';
 
 $Id_usuario = $_SESSION['Id_usuario'];
 
@@ -40,5 +40,5 @@ $pedidos = $result->fetch_all(MYSQLI_ASSOC);
 
 <?php 
 $stmt->close();
-include 'templates/footer.php'; 
+include 'template/footer.php'; 
 ?>

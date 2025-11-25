@@ -1,7 +1,7 @@
 <?php 
 include 'config/auth_check.php'; 
 include 'config/conexao.php';
-include 'templates/header.php'; 
+include 'template/header.php'; 
 
 if (empty($_SESSION['carrinho'])) {
     echo "<div class='alert alert-warning'>Carrinho vazio. <a href='index.php'>Voltar</a></div>";
@@ -60,4 +60,4 @@ while($prod = $result->fetch_assoc()) {
     </div>
 </div>
 
-<?php include 'templates/footer.php'; ?>
+<?php include 'template/footer.php'; ?>

@@ -1,6 +1,6 @@
 <?php 
 include 'config/conexao.php';
-include 'templates/header.php';
+include 'template/header.php';
 
 $sql = "SELECT * FROM produtos";
 $result = $conexao->query($sql);
@@ -38,4 +38,4 @@ if ($result && $result->num_rows > 0):
     <?php endif; ?>
 </div>
 
-<?php include 'templates/footer.php'; ?>
+<?php include 'template/footer.php'; ?>
