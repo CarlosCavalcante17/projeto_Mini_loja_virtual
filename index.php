@@ -26,7 +26,7 @@ if ($result && $result->num_rows > 0):
                     <p class="card-text text-truncate"><?php echo htmlspecialchars($produto['descricao']); ?></p>
                     <h5 class="text-primary mt-auto">R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></h5>
                     
-                    <a href="process/carrinho_add.php?id=<?php echo $produto['id']; ?>" class="btn btn-primary w-100 mt-2">Adicionar ao Carrinho</a>
+                    <a href="processos/carrinho_add.php?id=<?php echo $produto['id']; ?>" class="btn btn-primary w-100 mt-2">Adicionar ao Carrinho</a>
                 </div>
             </div>
         </div>

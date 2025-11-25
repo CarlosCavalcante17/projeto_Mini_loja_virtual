@@ -1,11 +1,17 @@
 <?php
 
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+include 'config/conexao.php';
+
+
 $quantidade_carrinho = isset($_SESSION['carrinho']) ? array_sum($_SESSION['carrinho']) : 0;
 ?>
+
+
 <!DOCTYPE html>
 <html lang="pt_BR">
 <head>

@@ -1,58 +1,81 @@
 <?php
-include 'config/conexao.php';
+
 include 'template/header.php';
+include 'config/conexao.php';
 
 $carrinho = $_SESSION['carrinho'] ?? [];
+$total_carrinho = 0;
+$itens_carrinho = [];
+
+if (!empty($carrinho)) {
+    
+    $ids_carrinho = implode(',', array_keys($carrinho));
+    
+    $sql = "SELECT id, nome, preco, imagem_url FROM produtos WHERE id IN ($ids_carrinho)";
+    $resultado = $conexao->query($sql);
+
+    if ($resultado && $resultado->num_rows > 0) {
+        while ($produto = $resultado->fetch_assoc()) { 
+            $produto_id = $produto['id'];
+            $produto['quantidade'] = $carrinho[$produto_id];
+            $produto['subtotal'] = $produto['preco'] * $produto['quantidade'];
+            
+            $total_carrinho += $produto['subtotal'];
+            $itens_carrinho[] = $produto;
+        }
+    }
+}
 ?>
 
 <h2>Seu Carrinho</h2>
-
-<?php if (empty($carrinho)): ?>
-    <div class="alert alert-info">O carrinho está vazio.</div>
-<?php else: ?>
-    <table class="table table-striped">
-        <thead>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Produto</th>
+            <th class="text-center">Qtd</th>
+            <th class="text-end">Preço Unit.</th>
+            <th class="text-end">Subtotal</th>
+            <th class="text-center">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (empty($itens_carrinho)): ?>
             <tr>
-                <th>Produto</th>
-                <th>Qtd</th>
-                <th>Preço Unit.</th>
-                <th>Subtotal</th>
+                <td colspan="5" class="text-center text-muted">Seu carrinho está vazio.</td>
             </tr>
-        </thead>
-        <tbody>
-            <?php
-            // Busca detalhes dos produtos que estão na sessão
-            $ids = implode(',', array_keys($carrinho));
-            $stmt = $pdo->query("SELECT * FROM produtos WHERE id IN ($ids)");
-            $produtos = $stmt->fetchAll();
-            $total_geral = 0;
-
-            foreach ($produtos as $prod):
-                $qtd = $carrinho[$prod['id']];
-                $subtotal = $prod['preco'] * $qtd;
-                $total_geral += $subtotal;
-            ?>
+        <?php else: ?>
+            <?php foreach ($itens_carrinho as $item): ?>
                 <tr>
-                    <td><?php echo $prod['nome']; ?></td>
-                    <td><?php echo $qtd; ?></td>
-                    <td>R$ <?php echo number_format($prod['preco'], 2, ',', '.'); ?></td>
-                    <td>R$ <?php echo number_format($subtotal, 2, ',', '.'); ?></td>
+                    <td><?php echo htmlspecialchars($item['nome']); ?></td>
+                    <td class="text-center"><?php echo $item['quantidade']; ?></td>
+                    <td class="text-end">R$ <?php echo number_format($item['preco'], 2, ',', '.'); ?></td>
+                    <td class="text-end">R$ <?php echo number_format($item['subtotal'], 2, ',', '.'); ?></td>
+                    <td class="text-center">
+                        <a href="processos/carrinho_remover.php?id=<?php echo $item['id']; ?>" class="btn btn-sm btn-danger" title="Remover item">
+                            Remover
+                        </a>
+                    </td>
                 </tr>
             <?php endforeach; ?>
-        </tbody>
-        <tfoot>
+            
             <tr>
-                <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                <td><strong>R$ <?php echo number_format($total_geral, 2, ',', '.'); ?></strong></td>
+                <td colspan="3" class="text-end fw-bold">Total</td>
+                <td class="text-end fw-bold">R$ <?php echo number_format($total_carrinho, 2, ',', '.'); ?></td>
+                <td></td>
             </tr>
-        </tfoot>
-    </table>
+            
+        <?php endif; ?>
+    </tbody>
+</table>
 
-    <div class="d-flex justify-content-end">
+<?php if (!empty($itens_carrinho)): ?>
+    <div class="d-flex justify-content-end mt-4">
         <?php if (isset($_SESSION['id_usuario'])): ?>
-            <a href="process/checkout_process.php" class="btn btn-success btn-lg">Finalizar Compra</a>
+            <a href="checkout.php" class="btn btn-success btn-lg">Finalizar Compra</a>
         <?php else: ?>
-            <a href="login.php" class="btn btn-warning">Faça Login para Comprar</a>
+            <div class="alert alert-warning mb-0">
+                <a href="login.php" class="alert-link">Faça login</a> para finalizar a compra.
+            </div>
         <?php endif; ?>
     </div>
 <?php endif; ?>
